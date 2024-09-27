@@ -10,27 +10,21 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilMagnifyingGlass } from '@coreui/icons'
+import TableComponent from '../../../components/tableComponent'
 
 const PageUsersManagement = () => {
   return (
-    <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+    <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-start">
       <CContainer>
         <CRow className="justify-content-center">
-          <CCol md={6}>
-            <span className="clearfix">
-              <h1 className="float-start display-3 me-4">500</h1>
-              <h4 className="pt-3">Houston, we have a problem!</h4>
-              <p className="text-body-secondary float-start">
-                The page you are looking for is temporarily unavailable.
-              </p>
+          <CCol md={12}>
+            <span className="clearfix d-flex flex-row align-items-center justify-content-between">
+              <h6 className="float-start display-5 me-6">Usuários</h6>
+              <CButton color="primary" className="float-end">
+                Adicionar
+              </CButton>
             </span>
-            <CInputGroup className="input-prepend">
-              <CInputGroupText>
-                <CIcon icon={cilMagnifyingGlass} />
-              </CInputGroupText>
-              <CFormInput type="text" placeholder="What are you looking for?" />
-              <CButton color="info">Search</CButton>
-            </CInputGroup>
+            <TableComponent />
           </CCol>
         </CRow>
       </CContainer>
