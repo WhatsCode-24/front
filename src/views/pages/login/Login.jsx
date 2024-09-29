@@ -15,14 +15,25 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
+import authServices from '../../../services/authService'
+import { toast } from 'react-toastify'
+import { useAuth } from '../../../contexts/authContexts'
 
 const Login = () => {
+  const { login } = useAuth()
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     console.log('Email:', email)
     console.log('Password:', password)
+    const result = await authServices.login({ email, password })
+    if (result.status === 401) {
+      toast.error('Usuário ou senha inválidos')
+    }
+    if (result.status === 200) {
+      login(result)
+    }
   }
 
   return (
