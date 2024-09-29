@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   CButton,
   CCol,
@@ -6,6 +6,10 @@ import {
   CFormInput,
   CInputGroup,
   CInputGroupText,
+  CModal,
+  CModalBody,
+  CModalHeader,
+  CModalTitle,
   CRow,
   CTable,
   CTableBody,
@@ -15,9 +19,46 @@ import {
   CTableRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilMagnifyingGlass, cilUser } from '@coreui/icons'
+import { cilMagnifyingGlass, cilPen, cilPencil, cilUser } from '@coreui/icons'
+import acessosServices from '../../../services/acessosService'
 
 const PageAcessManagement = () => {
+  const [acessos, setAcessos] = React.useState([])
+  const [modalAddVisible, setModalAddVisible] = React.useState(false)
+
+  const getAllAcessos = async () => {
+    try {
+      const { data } = await acessosServices.getAllAcess()
+      console.log(data)
+      setAcessos(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    getAllAcessos()
+  }, [])
+
+  //   classificacao_acesso
+  // :
+  // "Critico"
+  // horario_acesso
+  // :
+  // "2024-03-09 21:00:00"
+  // id_acesso
+  // :
+  // 3
+  // id_empresa_comodo
+  // :
+  // 1
+  // nome_comodo
+  // :
+  // "Comodo 1"
+  // observacao_acesso
+  // :
+  // "Acesso Fora de Horario"
+
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-start">
       <CContainer>
@@ -45,65 +86,70 @@ const PageAcessManagement = () => {
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-                <CTableRow>
-                  <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                  <CTableDataCell>Guilherme Duarte Cenzi Dias</CTableDataCell>
-                  <CTableDataCell>399.367.478-28</CTableDataCell>
-                  <CTableDataCell>guilhermedcdias.2023@gmail.com</CTableDataCell>
-                  <CTableDataCell>(12) 97407-7685</CTableDataCell>
-                  <CTableDataCell className="d-flex flex-row justify-content-around">
-                    <button className="btn btn-sm btn-primary">
-                      <CIcon icon={cilUser} />
-                    </button>
-                    <button className="btn btn-sm btn-success">
-                      <CIcon icon={cilUser} />
-                    </button>
-                    <button className="btn btn-sm btn-danger">
-                      <CIcon icon={cilUser} />
-                    </button>
-                  </CTableDataCell>
-                </CTableRow>
-                <CTableRow>
-                  <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                  <CTableDataCell>Guilherme Duarte Cenzi Dias</CTableDataCell>
-                  <CTableDataCell>399.367.478-28</CTableDataCell>
-                  <CTableDataCell>guilhermedcdias.2023@gmail.com</CTableDataCell>
-                  <CTableDataCell>(12) 97407-7685</CTableDataCell>
-                  <CTableDataCell className="d-flex flex-row justify-content-around">
-                    <button className="btn btn-sm btn-primary">
-                      <CIcon icon={cilUser} />
-                    </button>
-                    <button className="btn btn-sm btn-success">
-                      <CIcon icon={cilUser} />
-                    </button>
-                    <button className="btn btn-sm btn-danger">
-                      <CIcon icon={cilUser} />
-                    </button>
-                  </CTableDataCell>
-                </CTableRow>
-                <CTableRow>
-                  <CTableHeaderCell scope="row">3</CTableHeaderCell>
-                  <CTableDataCell>Guilherme Duarte Cenzi Dias</CTableDataCell>
-                  <CTableDataCell>399.367.478-28</CTableDataCell>
-                  <CTableDataCell>guilhermedcdias.2023@gmail.com</CTableDataCell>
-                  <CTableDataCell>(12) 97407-7685</CTableDataCell>
-                  <CTableDataCell className="d-flex flex-row justify-content-around">
-                    <button className="btn btn-sm btn-primary">
-                      <CIcon icon={cilUser} />
-                    </button>
-                    <button className="btn btn-sm btn-success">
-                      <CIcon icon={cilUser} />
-                    </button>
-                    <button className="btn btn-sm btn-danger">
-                      <CIcon icon={cilUser} />
-                    </button>
-                  </CTableDataCell>
-                </CTableRow>
+                {acessos &&
+                  acessos.map((acesso) => (
+                    <CTableRow key={acesso.id_acesso}>
+                      <CTableHeaderCell scope="row">{acesso.id_acesso}</CTableHeaderCell>
+                      <CTableDataCell>{acesso.classificacao_acesso}</CTableDataCell>
+                      <CTableDataCell>{acesso.observacao_acesso}</CTableDataCell>
+                      <CTableDataCell>{acesso.horario_acesso}</CTableDataCell>
+                      <CTableDataCell>{acesso.nome_comodo}</CTableDataCell>
+                      <CTableDataCell className="d-flex flex-row justify-content-around">
+                        <button className="btn btn-sm btn-primary">
+                          <CIcon icon={cilPencil} />
+                        </button>
+                      </CTableDataCell>
+                    </CTableRow>
+                  ))}
               </CTableBody>
             </CTable>
           </CCol>
         </CRow>
       </CContainer>
+      <CModal
+        size="xl"
+        visible={modalAddVisible}
+        onClose={() => {}}
+        aria-labelledby="EditarAccesso"
+      >
+        <CModalHeader>
+          <CModalTitle id="EditarAccesso">Editar Acesso</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CRow>
+            <CCol>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>
+                  <CIcon icon={cilUser} />
+                </CInputGroupText>
+                <CFormInput type="text" placeholder="classificação de Acesso" />
+              </CInputGroup>
+            </CCol>
+            <CCol>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>
+                  <CIcon icon={cilMagnifyingGlass} />
+                </CInputGroupText>
+                <CFormInput type="text" placeholder="Observação do Acesso" />
+              </CInputGroup>
+            </CCol>
+          </CRow>
+          <CRow>
+            <CCol>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>
+                  <CIcon icon={cilUser} />
+                </CInputGroupText>
+                <CFormInput type="text" placeholder="Horario do Acesso" />
+              </CInputGroup>
+            </CCol>
+          </CRow>
+          {/* botão salvar */}
+          <div className="d-flex flex-row justify-content-end">
+            <CButton color="primary">Salvar</CButton>
+          </div>
+        </CModalBody>
+      </CModal>
     </div>
   )
 }

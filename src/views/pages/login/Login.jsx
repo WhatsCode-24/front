@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   CButton,
   CCard,
@@ -24,15 +24,15 @@ const Login = () => {
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
 
+  const navigate = useNavigate()
+
   const handleLogin = async () => {
-    console.log('Email:', email)
-    console.log('Password:', password)
     const result = await authServices.login({ email, password })
     if (result.status === 401) {
       toast.error('Usuário ou senha inválidos')
     }
     if (result.status === 200) {
-      login(result)
+      login(result, navigate)
     }
   }
 
