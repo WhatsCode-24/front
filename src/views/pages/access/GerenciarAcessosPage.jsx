@@ -4,6 +4,7 @@ import {
   CCol,
   CContainer,
   CFormInput,
+  CFormSelect,
   CInputGroup,
   CInputGroupText,
   CModal,
@@ -24,6 +25,9 @@ import acessosServices from '../../../services/acessosService'
 
 const PageAcessManagement = () => {
   const [acessos, setAcessos] = React.useState([])
+  const [editAcesso, setEditAcesso] = React.useState(null)
+  const [addAcesso, setAddAcesso] = React.useState(null)
+  const [modalEditVisible, setModalEditVisible] = React.useState(false)
   const [modalAddVisible, setModalAddVisible] = React.useState(false)
 
   const getAllAcessos = async () => {
@@ -67,7 +71,11 @@ const PageAcessManagement = () => {
             <div className="d-flex flex-row justify-content-between p-3">
               <h6 className="float-start display-6 me-6">Acessos</h6>
               <div className="d-flex flex-row justify-content-center align-items-center">
-                <button color="primary" className="btn btn-sm btn-primary">
+                <button
+                  color="primary"
+                  className="btn btn-sm btn-primary"
+                  onClick={() => setModalAddVisible(true)}
+                >
                   Adicionar Acesso
                 </button>
               </div>
@@ -95,7 +103,13 @@ const PageAcessManagement = () => {
                       <CTableDataCell>{acesso.horario_acesso}</CTableDataCell>
                       <CTableDataCell>{acesso.nome_comodo}</CTableDataCell>
                       <CTableDataCell className="d-flex flex-row justify-content-around">
-                        <button className="btn btn-sm btn-primary">
+                        <button
+                          className="btn btn-sm btn-primary"
+                          onClick={() => {
+                            setEditAcesso(acesso)
+                            setModalEditVisible(true)
+                          }}
+                        >
                           <CIcon icon={cilPencil} />
                         </button>
                       </CTableDataCell>
@@ -108,7 +122,7 @@ const PageAcessManagement = () => {
       </CContainer>
       <CModal
         size="xl"
-        visible={modalAddVisible}
+        visible={modalEditVisible}
         onClose={() => {}}
         aria-labelledby="EditarAccesso"
       >
@@ -122,7 +136,14 @@ const PageAcessManagement = () => {
                 <CInputGroupText>
                   <CIcon icon={cilUser} />
                 </CInputGroupText>
-                <CFormInput type="text" placeholder="classificação de Acesso" />
+                <CFormInput
+                  type="text"
+                  placeholder="classificação de Acesso"
+                  value={editAcesso?.classificacao_acesso}
+                  onChange={(e) =>
+                    setEditAcesso({ ...editAcesso, classificacao_acesso: e.target.value })
+                  }
+                />
               </CInputGroup>
             </CCol>
             <CCol>
@@ -130,7 +151,14 @@ const PageAcessManagement = () => {
                 <CInputGroupText>
                   <CIcon icon={cilMagnifyingGlass} />
                 </CInputGroupText>
-                <CFormInput type="text" placeholder="Observação do Acesso" />
+                <CFormInput
+                  type="text"
+                  placeholder="Observação do Acesso"
+                  value={editAcesso?.observacao_acesso}
+                  onChange={(e) =>
+                    setEditAcesso({ ...editAcesso, observacao_acesso: e.target.value })
+                  }
+                />
               </CInputGroup>
             </CCol>
           </CRow>
@@ -140,8 +168,86 @@ const PageAcessManagement = () => {
                 <CInputGroupText>
                   <CIcon icon={cilUser} />
                 </CInputGroupText>
-                <CFormInput type="text" placeholder="Horario do Acesso" />
+                <CFormInput
+                  type="text"
+                  placeholder="Horario do Acesso"
+                  value={editAcesso?.horario_acesso}
+                  onChange={(e) => setEditAcesso({ ...editAcesso, horario_acesso: e.target.value })}
+                />
               </CInputGroup>
+            </CCol>
+          </CRow>
+          {/* botão salvar */}
+          <div className="d-flex flex-row justify-content-end">
+            <CButton color="primary">Salvar</CButton>
+          </div>
+        </CModalBody>
+      </CModal>
+      <CModal
+        size="xl"
+        visible={modalAddVisible}
+        onClose={() => {}}
+        aria-labelledby="AdicionarAccesso"
+      >
+        <CModalHeader>
+          <CModalTitle id="AdicionarAccesso">Adicionar Acesso</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CRow>
+            <CCol>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>
+                  <CIcon icon={cilUser} />
+                </CInputGroupText>
+                <CFormInput
+                  type="text"
+                  placeholder="classificação de Acesso"
+                  value={addAcesso?.classificacao_acesso}
+                  onChange={(e) =>
+                    setAddAcesso({ ...addAcesso, classificacao_acesso: e.target.value })
+                  }
+                />
+              </CInputGroup>
+            </CCol>
+            <CCol>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>
+                  <CIcon icon={cilMagnifyingGlass} />
+                </CInputGroupText>
+                <CFormInput
+                  type="text"
+                  placeholder="Observação do Acesso"
+                  value={addAcesso?.observacao_acesso}
+                  onChange={(e) =>
+                    setAddAcesso({ ...addAcesso, observacao_acesso: e.target.value })
+                  }
+                />
+              </CInputGroup>
+            </CCol>
+          </CRow>
+          <CRow>
+            <CCol>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>
+                  <CIcon icon={cilUser} />
+                </CInputGroupText>
+                <CFormInput
+                  type="text"
+                  placeholder="Horario do Acesso"
+                  value={addAcesso?.horario_acesso}
+                  onChange={(e) => setAddAcesso({ ...addAcesso, horario_acesso: e.target.value })}
+                />
+              </CInputGroup>
+            </CCol>
+            <CCol>
+              <CFormSelect aria-label="Default select example">
+                <option>Selecione a Area do Acesso</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3" disabled>
+                  Three
+                </option>
+              </CFormSelect>
             </CCol>
           </CRow>
           {/* botão salvar */}

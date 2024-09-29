@@ -9,6 +9,7 @@ import {
   cilDescription,
   cilDoor,
   cilDrop,
+  cilHome,
   cilNotes,
   cilPencil,
   cilPuzzle,
@@ -38,6 +39,12 @@ const _nav = [
     name: 'Gerenciar Usuarios',
     to: '/users/manage',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Gerenciar Empresas',
+    to: '/companies/manage',
+    icon: <CIcon icon={cilHome} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
