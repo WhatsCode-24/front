@@ -4,6 +4,7 @@ import { CContainer, CSpinner } from '@coreui/react'
 
 // routes config
 import routes from '../routes'
+import { useAuth } from '../contexts/authContexts'
 
 const AppContent = () => {
   return (

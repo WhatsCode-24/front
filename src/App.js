@@ -1,10 +1,10 @@
 import React, { Suspense, useEffect } from 'react'
-import { HashRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
-import { AuthProvider } from './contexts/authContexts'
+import { useAuth } from './contexts/authContexts'
 
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
@@ -32,25 +32,30 @@ const App = () => {
     setColorMode(storedTheme)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
+  const { user } = useAuth()
+
   return (
-    <AuthProvider>
-      <HashRouter>
-        <Suspense
-          fallback={
-            <div className="pt-3 text-center">
-              <CSpinner color="primary" variant="grow" />
-            </div>
-          }
-        >
-          <Routes>
-            <Route exact path="/login" name="Login Page" element={<Login />} />
-            <Route exact path="/404" name="Page 404" element={<Page404 />} />
-            <Route exact path="/500" name="Page 500" element={<Page500 />} />
-            <Route path="*" name="Home" element={<DefaultLayout />} />
-          </Routes>
-        </Suspense>
-      </HashRouter>
-    </AuthProvider>
+    <HashRouter>
+      <Suspense
+        fallback={
+          <div className="pt-3 text-center">
+            <CSpinner color="primary" variant="grow" />
+          </div>
+        }
+      >
+        <Routes>
+          <Route exact path="/login" name="Login Page" element={<Login />} />
+          {/* <Route exact path="/register" name="Register Page" element={<Register />} /> */}
+          <Route exact path="/404" name="Page 404" element={<Page404 />} />
+          <Route exact path="/500" name="Page 500" element={<Page500 />} />
+          <Route
+            path="*"
+            name="Home"
+            element={user ? <DefaultLayout /> : <Navigate to="login" replace />}
+          />
+        </Routes>
+      </Suspense>
+    </HashRouter>
   )
 }
 
