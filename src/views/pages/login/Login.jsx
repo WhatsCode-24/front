@@ -17,6 +17,14 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 
 const Login = () => {
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
+
+  const handleLogin = () => {
+    console.log('Email:', email)
+    console.log('Password:', password)
+  }
+
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -34,16 +42,35 @@ const Login = () => {
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
-                      <CFormInput placeholder="Preencha com seu email" />
+                      <CFormInput
+                        placeholder="Preencha com seu email"
+                        value={email}
+                        onChange={(e) => {
+                          setEmail(e.target.value)
+                        }}
+                      />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
                       <CInputGroupText>
                         <CIcon icon={cilLockLocked} />
                       </CInputGroupText>
-                      <CFormInput type="password" placeholder="Preencha com sua senha" />
+                      <CFormInput
+                        type="password"
+                        placeholder="Preencha com sua senha"
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value)
+                        }}
+                      />
                     </CInputGroup>
                     <CRow className="d-flex flex-row justify-content-end">
-                      <CButton color="primary" className="px-4">
+                      <CButton
+                        color="primary"
+                        className="px-4"
+                        onClick={() => {
+                          handleLogin()
+                        }}
+                      >
                         Login
                       </CButton>
                       {/* <CCol xs={6} className="text-right">
