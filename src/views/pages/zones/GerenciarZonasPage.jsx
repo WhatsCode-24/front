@@ -17,13 +17,16 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
+  CFormSelect,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilMagnifyingGlass, cilPencil, cilTrash, cilUser } from '@coreui/icons'
 import zonesServices from '../../../services/zonesService'
+import companiesServices from '../../../services/empresasService'
 
 const PageZonesManagement = () => {
   const [zones, setZones] = useState([])
+  const [empresas, setEmpresas] = useState([])
   const [modalAddVisible, setModalAddVisible] = useState(false)
   const [modalEditVisible, setModalEditVisible] = useState(false)
   const [addZone, setAddZone] = useState(null)
@@ -33,6 +36,16 @@ const PageZonesManagement = () => {
     try {
       const { data } = await zonesServices.getAllZones()
       setZones(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const getAllEmpresas = async () => {
+    try {
+      const { data } = await companiesServices.getAllCompanies()
+      console.log(data)
+      setEmpresas(data)
     } catch (error) {
       console.error(error)
     }
@@ -49,6 +62,7 @@ const PageZonesManagement = () => {
 
   useEffect(() => {
     findZones()
+    getAllEmpresas()
   }, [])
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-start">
@@ -84,34 +98,44 @@ const PageZonesManagement = () => {
               </CTableHead>
               <CTableBody>
                 {zones &&
-                  zones.map((zone) => (
-                    <CTableRow key={zone.id_empresa_comodo}>
-                      <CTableHeaderCell scope="row">{zone.id_empresa_comodo}</CTableHeaderCell>
-                      <CTableDataCell>{zone.nome_comodo}</CTableDataCell>
-                      <CTableDataCell>{zone.tamanho_comodo}</CTableDataCell>
-                      <CTableDataCell>{zone.tipo_acesso}</CTableDataCell>
-                      <CTableDataCell>-</CTableDataCell>
-                      <CTableDataCell className="d-flex flex-row justify-content-around">
-                        <button
-                          className="btn btn-sm btn-primary"
-                          onClick={() => {
-                            setEditZone(zone)
-                            setModalEditVisible(true)
-                          }}
-                        >
-                          <CIcon icon={cilPencil} />
-                        </button>
-                        <button
-                          className="btn btn-sm btn-danger"
-                          onClick={() => {
-                            deleteZone(zone.id_empresa_comodo)
-                          }}
-                        >
-                          <CIcon icon={cilTrash} />
-                        </button>
-                      </CTableDataCell>
-                    </CTableRow>
-                  ))}
+                  zones.map((zone) => {
+                    const empresaEncontrada = empresas.find(
+                      (empresa) => empresa.id_empresa === zone.id_empresa,
+                    )
+
+                    return (
+                      <CTableRow key={zone.id_empresa_comodo}>
+                        <CTableHeaderCell scope="row">{zone.id_empresa_comodo}</CTableHeaderCell>
+                        <CTableDataCell>{zone.nome_comodo}</CTableDataCell>
+                        <CTableDataCell>{zone.tamanho_comodo}</CTableDataCell>
+                        <CTableDataCell>{zone.tipo_acesso}</CTableDataCell>
+                        <CTableDataCell>
+                          {empresaEncontrada
+                            ? empresaEncontrada.nome_empresa
+                            : 'Nome não encontrado'}
+                        </CTableDataCell>
+                        <CTableDataCell className="d-flex flex-row justify-content-around">
+                          <button
+                            className="btn btn-sm btn-primary"
+                            onClick={() => {
+                              setEditZone(zone)
+                              setModalEditVisible(true)
+                            }}
+                          >
+                            <CIcon icon={cilPencil} />
+                          </button>
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() => {
+                              deleteZone(zone.id_empresa_comodo)
+                            }}
+                          >
+                            <CIcon icon={cilTrash} />
+                          </button>
+                        </CTableDataCell>
+                      </CTableRow>
+                    )
+                  })}
               </CTableBody>
             </CTable>
           </CCol>
@@ -149,11 +173,11 @@ const PageZonesManagement = () => {
                   <CIcon icon={cilUser} />
                 </CInputGroupText>
                 <CFormInput
-                  type="text"
+                  type="number"
                   placeholder="Tamanho"
-                  value={addZone?.tamanho_comodo}
+                  value={addZone?.tamanho_comodo || ''}
                   onChange={(e) => {
-                    setAddZone({ ...addZone, tamanho_comodo: e.target.value })
+                    setAddZone({ ...addZone, tamanho_comodo: Number(e.target.value) })
                   }}
                 />
               </CInputGroup>
@@ -173,6 +197,26 @@ const PageZonesManagement = () => {
                 />
               </CInputGroup>
             </CCol>
+            <CCol>
+              <CFormSelect
+                aria-label="Default select example"
+                value={addZone?.empresaSelecionada}
+                onChange={(e) => {
+                  setAddZone({ ...addZone, empresaSelecionada: e.target.value })
+                }}
+              >
+                <option value="">Selecione a Empresa</option>
+                {empresas?.length > 0 ? (
+                  empresas.map((empresa, index) => (
+                    <option value={empresa.id_empresa} key={index}>
+                      {empresa.nome_empresa}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Nenhuma empresa disponível</option>
+                )}
+              </CFormSelect>
+            </CCol>
             {/* <CCol md={6}>
               <CInputGroup className="mb-3">
                 <CInputGroupText>
@@ -188,7 +232,10 @@ const PageZonesManagement = () => {
                 color="primary"
                 onClick={async () => {
                   try {
-                    const create = await zonesServices.createZone({ ...addZone, id_empresa: 3 })
+                    const create = await zonesServices.createZone({
+                      ...addZone,
+                      id_empresa: addZone.empresaSelecionada,
+                    })
                     console.log(create)
                     findZones()
                     setModalAddVisible(false)

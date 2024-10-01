@@ -1,7 +1,6 @@
 import apiClient from './api'
 
 const zonesServices = {
-  // Método para fazer login
   async getAllZones() {
     return apiClient.get('/empresa-comodos')
   },

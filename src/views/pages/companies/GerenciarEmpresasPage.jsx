@@ -30,6 +30,7 @@ import {
   cilPencil,
   cilPhone,
   cilUser,
+  cilTrash,
 } from '@coreui/icons'
 import acessosServices from '../../../services/acessosService'
 import companiesServices from '../../../services/empresasService'
@@ -46,6 +47,15 @@ const PageCompaniesManagement = () => {
       const { data } = await companiesServices.getAllCompanies()
       console.log(data)
       setEmpresas(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const deleteCompanie = async (id) => {
+    try {
+      await companiesServices.deleteCompanie(id)
+      getAllEmpresas()
     } catch (error) {
       console.error(error)
     }
@@ -113,6 +123,14 @@ const PageCompaniesManagement = () => {
                           }}
                         >
                           <CIcon icon={cilPencil} />
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() => {
+                            deleteCompanie(empresa.id_empresa)
+                          }}
+                        >
+                          <CIcon icon={cilTrash} />
                         </button>
                       </CTableDataCell>
                     </CTableRow>

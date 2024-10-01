@@ -20,11 +20,13 @@ import {
   CTableRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilMagnifyingGlass, cilPen, cilPencil, cilUser } from '@coreui/icons'
+import { cilMagnifyingGlass, cilPen, cilPencil, cilUser, cilTrash } from '@coreui/icons'
 import acessosServices from '../../../services/acessosService'
+import zonesServices from '../../../services/zonesService'
 
 const PageAcessManagement = () => {
   const [acessos, setAcessos] = React.useState([])
+  const [zones, setZones] = React.useState([])
   const [editAcesso, setEditAcesso] = React.useState(null)
   const [addAcesso, setAddAcesso] = React.useState(null)
   const [modalEditVisible, setModalEditVisible] = React.useState(false)
@@ -33,8 +35,25 @@ const PageAcessManagement = () => {
   const getAllAcessos = async () => {
     try {
       const { data } = await acessosServices.getAllAcess()
-      console.log(data)
       setAcessos(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const findZones = async () => {
+    try {
+      const { data } = await zonesServices.getAllZones()
+      setZones(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const deleteAcess = async (id) => {
+    try {
+      await acessosServices.deleteAcess(id)
+      getAllAcessos()
     } catch (error) {
       console.error(error)
     }
@@ -42,6 +61,7 @@ const PageAcessManagement = () => {
 
   useEffect(() => {
     getAllAcessos()
+    findZones()
   }, [])
 
   //   classificacao_acesso
@@ -112,6 +132,14 @@ const PageAcessManagement = () => {
                         >
                           <CIcon icon={cilPencil} />
                         </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() => {
+                            deleteAcess(acesso.id_acesso)
+                          }}
+                        >
+                          <CIcon icon={cilTrash} />
+                        </button>
                       </CTableDataCell>
                     </CTableRow>
                   ))}
@@ -179,7 +207,21 @@ const PageAcessManagement = () => {
           </CRow>
           {/* botão salvar */}
           <div className="d-flex flex-row justify-content-end">
-            <CButton color="primary">Salvar</CButton>
+            <CButton
+              color="primary"
+              onClick={async () => {
+                try {
+                  const update = await acessosServices.updateAcess(editAcesso)
+                  console.log(update)
+                  getAllAcessos()
+                  setModalEditVisible(false)
+                } catch (error) {
+                  console.error(error)
+                }
+              }}
+            >
+              Salvar
+            </CButton>
           </div>
         </CModalBody>
       </CModal>
@@ -201,7 +243,7 @@ const PageAcessManagement = () => {
                 </CInputGroupText>
                 <CFormInput
                   type="text"
-                  placeholder="classificação de Acesso"
+                  placeholder="Classificação de Acesso"
                   value={addAcesso?.classificacao_acesso}
                   onChange={(e) =>
                     setAddAcesso({ ...addAcesso, classificacao_acesso: e.target.value })
@@ -240,19 +282,46 @@ const PageAcessManagement = () => {
               </CInputGroup>
             </CCol>
             <CCol>
-              <CFormSelect aria-label="Default select example">
-                <option>Selecione a Area do Acesso</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3" disabled>
-                  Three
-                </option>
+              <CFormSelect
+                aria-label="Default select example"
+                value={addAcesso?.comodoSelecionado}
+                onChange={(e) => {
+                  setAddAcesso({ ...addAcesso, comodoSelecionado: e.target.value })
+                }}
+              >
+                <option value="">Selecione o Comodo</option>
+                {zones?.length > 0 ? (
+                  zones.map((zone, index) => (
+                    <option value={zone.id_empresa_comodo} key={index}>
+                      {zone.nome_comodo}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Nenhuma empresa disponível</option>
+                )}
               </CFormSelect>
             </CCol>
           </CRow>
           {/* botão salvar */}
           <div className="d-flex flex-row justify-content-end">
-            <CButton color="primary">Salvar</CButton>
+            <CButton
+              color="primary"
+              onClick={async () => {
+                try {
+                  const create = await acessosServices.createAcess({
+                    ...addAcesso,
+                    id_empresa_comodo: addAcesso.comodoSelecionado,
+                  })
+                  console.log(create)
+                  getAllAcessos()
+                  setModalAddVisible(false)
+                } catch (error) {
+                  console.error(error)
+                }
+              }}
+            >
+              Salvar
+            </CButton>
           </div>
         </CModalBody>
       </CModal>
