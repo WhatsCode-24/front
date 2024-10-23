@@ -23,14 +23,17 @@ import CIcon from '@coreui/icons-react'
 import { cilMagnifyingGlass, cilPen, cilPencil, cilUser, cilTrash } from '@coreui/icons'
 import acessosServices from '../../../services/acessosService'
 import zonesServices from '../../../services/zonesService'
+import comodoPortasServices from '../../../services/comodoPortasService'
 
 const PageAcessManagement = () => {
   const [acessos, setAcessos] = React.useState([])
   const [zones, setZones] = React.useState([])
   const [editAcesso, setEditAcesso] = React.useState(null)
   const [addAcesso, setAddAcesso] = React.useState(null)
+  const [showAcesso, setShowAcesso] = React.useState(null)
   const [modalEditVisible, setModalEditVisible] = React.useState(false)
   const [modalAddVisible, setModalAddVisible] = React.useState(false)
+  const [modalShowVisible, setModalShowVisible] = React.useState(false)
 
   const getAllAcessos = async () => {
     try {
@@ -108,6 +111,7 @@ const PageAcessManagement = () => {
                   <CTableHeaderCell scope="col">Observação de Acesso</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Horario de Acesso</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Local</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Autorizado</CTableHeaderCell>
                   <CTableHeaderCell scope="col" className="text-center">
                     Actions
                   </CTableHeaderCell>
@@ -116,16 +120,26 @@ const PageAcessManagement = () => {
               <CTableBody>
                 {acessos &&
                   acessos.map((acesso) => (
-                    <CTableRow key={acesso.id_acesso}>
+                    <CTableRow
+                      key={acesso.id_acesso}
+                      onClick={() => {
+                        setShowAcesso(acesso)
+                        setModalShowVisible(true)
+                      }}
+                    >
                       <CTableHeaderCell scope="row">{acesso.id_acesso}</CTableHeaderCell>
                       <CTableDataCell>{acesso.classificacao_acesso}</CTableDataCell>
                       <CTableDataCell>{acesso.observacao_acesso}</CTableDataCell>
                       <CTableDataCell>{acesso.horario_acesso}</CTableDataCell>
-                      <CTableDataCell>{acesso.nome_comodo}</CTableDataCell>
+                      <CTableDataCell>{acesso.descricao_porta}</CTableDataCell>
+                      <CTableDataCell>
+                        {acesso.acesso_autorizado == 1 ? 'Sim' : 'Não'}
+                      </CTableDataCell>
                       <CTableDataCell className="d-flex flex-row justify-content-around">
                         <button
                           className="btn btn-sm btn-primary"
                           onClick={() => {
+                            e.stopPropagation()
                             setEditAcesso(acesso)
                             setModalEditVisible(true)
                           }}
@@ -322,6 +336,67 @@ const PageAcessManagement = () => {
             >
               Salvar
             </CButton>
+          </div>
+        </CModalBody>
+      </CModal>
+      <CModal
+        size="lg"
+        visible={modalShowVisible}
+        onClose={() => {}}
+        aria-labelledby="VisualizarAccesso"
+      >
+        <CModalHeader>
+          <CModalTitle id="VisualizarAccesso">Acesso</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <div className="d-flex flex-column justify-content-center align-items-center gap-3">
+            <h3 className="float-start">Autorizar Acesso?</h3>
+            <iframe
+              width="560"
+              height="315"
+              src="https://www.youtube.com/embed/qp_7hD686Ew"
+              title="YouTube video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+            <div className="d-flex flex-row justify-content-end gap-4">
+              <CButton
+                color="success"
+                size="lg"
+                onClick={async () => {
+                  try {
+                    await acessosServices.updateAcess({
+                      ...showAcesso,
+                      acesso_autorizado: 1,
+                    })
+                    getAllAcessos()
+                    setModalShowVisible(false)
+                  } catch (error) {
+                    console.error(error)
+                  }
+                }}
+              >
+                Sim
+              </CButton>
+              <CButton
+                color="danger"
+                size="lg"
+                onClick={async () => {
+                  try {
+                    await acessosServices.updateAcess({
+                      ...showAcesso,
+                      acesso_autorizado: 0,
+                    })
+                    getAllAcessos()
+                    setModalShowVisible(false)
+                  } catch (error) {
+                    console.error(error)
+                  }
+                }}
+              >
+                Não
+              </CButton>
+            </div>
           </div>
         </CModalBody>
       </CModal>
