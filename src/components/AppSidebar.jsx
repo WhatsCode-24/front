@@ -1,5 +1,6 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { useAuth } from '../contexts/authContexts'
 
 import {
   CCloseButton,
@@ -14,13 +15,22 @@ import CIcon from '@coreui/icons-react'
 import { AppSidebarNav } from './AppSidebarNav'
 
 import { logo, logo2 } from '../assets/brand/logo'
-// sidebar nav config
 import navigation from '../_nav'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
+  const { user } = useAuth()
+
+  const filteredNavigation = navigation.filter((item) => {
+    if (user?.id_nivel_acesso === 2) {
+      return (
+        item.name === 'Dashboard' || item.name === 'Gerenciar Acessos' || item.name === 'Unidades'
+      )
+    }
+    return true
+  })
 
   return (
     <CSidebar
@@ -44,7 +54,7 @@ const AppSidebar = () => {
           onClick={() => dispatch({ type: 'set', sidebarShow: false })}
         />
       </CSidebarHeader>
-      <AppSidebarNav items={navigation} />
+      <AppSidebarNav items={filteredNavigation} />
       <CSidebarFooter className="border-top d-none d-lg-flex">
         <CSidebarToggler
           onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}
