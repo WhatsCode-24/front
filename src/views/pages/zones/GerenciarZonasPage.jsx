@@ -18,18 +18,39 @@ import {
   CTableHeaderCell,
   CTableRow,
   CFormSelect,
+  CFormLabel,
+  CFormCheck,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilMagnifyingGlass, cilPencil, cilTrash, cilUser } from '@coreui/icons'
+import {
+  cilAppsSettings,
+  cilClock,
+  cilLockLocked,
+  cilLockUnlocked,
+  cilMagnifyingGlass,
+  cilPencil,
+  cilRoom,
+  cilTrash,
+  cilUser,
+} from '@coreui/icons'
 import zonesServices from '../../../services/zonesService'
 import companiesServices from '../../../services/empresasService'
+import { toast } from 'react-toastify'
 
 const PageZonesManagement = () => {
   const [zones, setZones] = useState([])
   const [empresas, setEmpresas] = useState([])
+  const [doors, setDoors] = useState([])
+
   const [modalAddVisible, setModalAddVisible] = useState(false)
   const [modalEditVisible, setModalEditVisible] = useState(false)
+  const [modalDoorVisible, setModalDoorVisible] = useState(false)
+
+  const [selectedZone, setSelectedZone] = useState(null)
+  const [isProtected, setIsProtected] = useState(true)
+
   const [addZone, setAddZone] = useState(null)
+  const [addZoneDoor, setAddZoneDoor] = useState(null)
   const [editZone, setEditZone] = useState(null)
 
   const findZones = async () => {
@@ -59,6 +80,38 @@ const PageZonesManagement = () => {
       console.error(error)
     }
   }
+
+  const deleteDoor = async (id) => {
+    try {
+      await zonesServices.deleteZoneDoor(id)
+      findDoorsOfZone()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const findDoorsOfZone = async () => {
+    try {
+      if (!selectedZone) return
+      const { data } = await zonesServices.getAllDoorsOfZone(selectedZone.id_empresa_comodo)
+      setDoors(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  // const doorManager = async (id) => {
+  //   try {
+  //     await zonesServices.deleteZone(id)
+  //     findZones()
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
+  // }
+
+  useEffect(() => {
+    findDoorsOfZone()
+  }, [selectedZone])
 
   useEffect(() => {
     findZones()
@@ -114,9 +167,9 @@ const PageZonesManagement = () => {
                             ? empresaEncontrada.nome_empresa
                             : 'Nome não encontrado'}
                         </CTableDataCell>
-                        <CTableDataCell className="d-flex flex-row justify-content-around">
+                        <CTableDataCell className="d-flex flex-row justify-content-center">
                           <button
-                            className="btn btn-sm btn-primary"
+                            className="btn btn-sm btn-primary me-2"
                             onClick={() => {
                               setEditZone(zone)
                               setModalEditVisible(true)
@@ -125,12 +178,21 @@ const PageZonesManagement = () => {
                             <CIcon icon={cilPencil} />
                           </button>
                           <button
-                            className="btn btn-sm btn-danger"
+                            className="btn btn-sm btn-danger me-2"
                             onClick={() => {
                               deleteZone(zone.id_empresa_comodo)
                             }}
                           >
                             <CIcon icon={cilTrash} />
+                          </button>
+                          <button
+                            className="btn btn-sm btn-primary"
+                            onClick={() => {
+                              setSelectedZone(zone)
+                              setModalDoorVisible(true)
+                            }}
+                          >
+                            <CIcon icon={cilRoom} />
                           </button>
                         </CTableDataCell>
                       </CTableRow>
@@ -319,6 +381,185 @@ const PageZonesManagement = () => {
               >
                 Editar
               </CButton>
+            </CCol>
+          </CRow>
+        </CModalBody>
+      </CModal>
+
+      <CModal
+        size="xl"
+        visible={modalDoorVisible}
+        onClose={() => {
+          setModalDoorVisible(false)
+          setSelectedZone(null)
+        }}
+        aria-labelledby="gerenciarPortas"
+      >
+        <CModalHeader>
+          <CModalTitle id="gerenciarPortas">Adicionar Porta</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CRow>
+            <CCol md={6}>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>
+                  <CIcon icon={cilUser} />
+                </CInputGroupText>
+                <CFormInput
+                  type="text"
+                  placeholder="Descrição da Porta"
+                  value={addZoneDoor?.descricao_porta ?? ''}
+                  onChange={(e) => {
+                    setAddZoneDoor({ ...addZoneDoor, descricao_porta: e.target.value })
+                  }}
+                />
+              </CInputGroup>
+            </CCol>
+            <CCol md={6}>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>
+                  <CIcon icon={cilClock} />
+                </CInputGroupText>
+                <CFormInput
+                  type="number"
+                  placeholder="Tempo de Abertura"
+                  value={addZoneDoor?.tempo ?? ''}
+                  onChange={(e) => {
+                    setAddZoneDoor({ ...addZoneDoor, tempo: e.target.value })
+                  }}
+                />
+              </CInputGroup>
+            </CCol>
+            <CCol md={6}>
+              <CInputGroup className="mb-3">
+                <CInputGroupText className="d-flex flex-row justify-content-start align-items-center w-100">
+                  <CIcon icon={cilLockLocked} />
+                  <CFormLabel htmlFor="inlineRadio2" className="m-0 ms-3">
+                    Tipo de Porta:
+                  </CFormLabel>
+                  <CFormCheck
+                    className="ms-3"
+                    inline
+                    type="radio"
+                    name="inlineRadioOptions"
+                    id="inlineCheckbox2"
+                    value={true}
+                    label="Porta Não Protegida"
+                    checked={isProtected === true}
+                    onChange={() => {
+                      setIsProtected(true)
+                      setAddZoneDoor({ ...addZoneDoor, door_password: null })
+                    }} // Changed from onClick to onChange
+                  />
+                  <CFormCheck
+                    inline
+                    type="radio"
+                    name="inlineRadioOptions"
+                    id="inlineCheckbox3"
+                    value={false}
+                    label="Porta Protegida"
+                    checked={isProtected === false}
+                    onChange={() => setIsProtected(false)} // Changed from onClick to onChange
+                  />
+                </CInputGroupText>
+              </CInputGroup>
+            </CCol>
+            <CCol md={6}>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>
+                  <CIcon icon={cilLockUnlocked} />
+                </CInputGroupText>
+                <CFormInput
+                  type="number"
+                  placeholder="Senha da Porta"
+                  value={addZoneDoor?.door_password ?? ''}
+                  onChange={(e) => {
+                    setAddZoneDoor({ ...addZoneDoor, door_password: e.target.value })
+                  }}
+                  disabled={isProtected}
+                />
+              </CInputGroup>
+            </CCol>
+          </CRow>
+          <CRow>
+            <CCol md={12} className="d-flex flex-row justify-content-end">
+              <CButton
+                color="primary"
+                onClick={async () => {
+                  try {
+                    var dados = {
+                      id_empresa_comodos: selectedZone.id_empresa_comodo,
+                      descricao_porta: addZoneDoor.descricao_porta,
+                      tempo: parseInt(addZoneDoor.tempo),
+                    }
+                    if (addZoneDoor.door_password) {
+                      dados.senha_porta = addZoneDoor.door_password
+                    }
+                    try {
+                      const create = await zonesServices.createZoneDoor(dados)
+                      if (create.status === 200 || create.status === 201) {
+                        setAddZoneDoor(null)
+                      }
+                      findDoorsOfZone()
+                    } catch (error) {
+                      console.error(error)
+                      toast.error('Erro ao adicionar porta')
+                    }
+                    // setModalDoorVisible(false)
+                  } catch (error) {
+                    console.error(error)
+                  }
+                }}
+              >
+                Adicionar
+              </CButton>
+            </CCol>
+          </CRow>
+          {/* listagem de portas desse comodo com botão de editar e de excluir */}
+          <CRow className="mt-4">
+            <CCol md={12}>
+              <CTable>
+                <CTableHead>
+                  <CTableRow>
+                    <CTableHeaderCell scope="col">ID</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Descrição</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Tempo</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Senha</CTableHeaderCell>
+                    <CTableHeaderCell scope="col" className="text-center">
+                      Actions
+                    </CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
+                <CTableBody>
+                  {doors &&
+                    doors.map((door, index) => (
+                      <CTableRow key={door.id_comodo_portas}>
+                        <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                        <CTableDataCell>{door.descricao_porta}</CTableDataCell>
+                        <CTableDataCell>{door.tempo}</CTableDataCell>
+                        <CTableDataCell>{door.senha_porta}</CTableDataCell>
+                        <CTableDataCell className="d-flex flex-row justify-content-center">
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={async () => {
+                              await deleteDoor(door.id_comodo_portas)
+                            }}
+                          >
+                            <CIcon icon={cilTrash} />
+                          </button>
+                        </CTableDataCell>
+                      </CTableRow>
+                    ))}
+
+                  {!doors.length && (
+                    <CTableRow>
+                      <CTableDataCell colSpan="5" className="text-center">
+                        Nenhuma porta encontrada
+                      </CTableDataCell>
+                    </CTableRow>
+                  )}
+                </CTableBody>
+              </CTable>
             </CCol>
           </CRow>
         </CModalBody>

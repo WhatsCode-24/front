@@ -1,10 +1,15 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { CChartLine } from '@coreui/react-chartjs'
 import { getStyle } from '@coreui/utils'
+import dashboardService from '../../services/dashService'
 
 const MainChart = () => {
   const chartRef = useRef(null)
+  const [data, setData] = useState(null)
+  const [dataGrafico, setDataGrafico] = useState([])
+  const [labels, setLabels] = useState([])
+  const [maiorNumero, setMaiorNumero] = useState(0)
 
   useEffect(() => {
     document.documentElement.addEventListener('ColorSchemeChange', () => {
@@ -26,7 +31,86 @@ const MainChart = () => {
     })
   }, [chartRef])
 
-  const random = () => Math.round(Math.random() * 100)
+  const dadosGrafico = async () => {
+    try {
+      var dadosDePara = {
+        January: 'Janeiro',
+        February: 'Fevereiro',
+        March: 'Março',
+        April: 'Abril',
+        May: 'Maio',
+        June: 'Junho',
+        July: 'Julho',
+        August: 'Agosto',
+        September: 'Setembro',
+        October: 'Outubro',
+        November: 'Novembro',
+        December: 'Dezembro',
+      }
+
+      var dataSets = []
+      var labels = []
+      var maiorNumero = 0
+
+      const response = await dashboardService.getDadosGrafico()
+      if (response.length === 0) {
+        return
+      }
+
+      for (let dado of response) {
+        if (!labels.includes(dadosDePara[dado.nome_mes])) {
+          labels.push(dadosDePara[dado.nome_mes])
+        }
+        let item = {
+          label: dado.nome_empresa,
+          backgroundColor: `rgba(${getStyle('--cui-info-rgb')}, .1)`,
+          borderColor: getStyle('--cui-info'),
+          pointHoverBackgroundColor: getStyle('--cui-info'),
+          borderWidth: 2,
+          data: [],
+          fill: true,
+        }
+
+        if (dado.total_acessos > maiorNumero) {
+          maiorNumero = dado.total_acessos
+        }
+
+        if (dataSets.length === 0) {
+          dataSets.push(item)
+        } else if (dataSets.filter((item) => item.label === dado.nome_empresa).length === 0) {
+          dataSets.push(item)
+        }
+      }
+
+      for (let item of dataSets) {
+        for (let lab of labels) {
+          let dado = response.filter(
+            (dado) => dado.nome_empresa === item.label && dadosDePara[dado.nome_mes] === lab,
+          )
+          console.log(dado, 'verify')
+          if (dado.length === 0) {
+            item.data.push(0)
+          } else {
+            item.data.push(dado[0].total_acessos)
+          }
+        }
+      }
+
+      setData(response)
+      setDataGrafico(dataSets)
+      setLabels(labels)
+      setMaiorNumero(maiorNumero)
+
+      console.log(dataSets)
+      console.log(labels)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    dadosGrafico()
+  }, [])
 
   return (
     <>
@@ -34,51 +118,8 @@ const MainChart = () => {
         ref={chartRef}
         style={{ height: '300px', marginTop: '40px' }}
         data={{
-          labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-          datasets: [
-            {
-              label: 'My First dataset',
-              backgroundColor: `rgba(${getStyle('--cui-info-rgb')}, .1)`,
-              borderColor: getStyle('--cui-info'),
-              pointHoverBackgroundColor: getStyle('--cui-info'),
-              borderWidth: 2,
-              data: [
-                random(50, 200),
-                random(50, 200),
-                random(50, 200),
-                random(50, 200),
-                random(50, 200),
-                random(50, 200),
-                random(50, 200),
-              ],
-              fill: true,
-            },
-            {
-              label: 'My Second dataset',
-              backgroundColor: 'transparent',
-              borderColor: getStyle('--cui-success'),
-              pointHoverBackgroundColor: getStyle('--cui-success'),
-              borderWidth: 2,
-              data: [
-                random(50, 200),
-                random(50, 200),
-                random(50, 200),
-                random(50, 200),
-                random(50, 200),
-                random(50, 200),
-                random(50, 200),
-              ],
-            },
-            {
-              label: 'My Third dataset',
-              backgroundColor: 'transparent',
-              borderColor: getStyle('--cui-danger'),
-              pointHoverBackgroundColor: getStyle('--cui-danger'),
-              borderWidth: 1,
-              borderDash: [8, 5],
-              data: [65, 65, 65, 65, 65, 65, 65],
-            },
-          ],
+          labels: labels,
+          datasets: dataGrafico,
         }}
         options={{
           maintainAspectRatio: false,
@@ -105,11 +146,11 @@ const MainChart = () => {
               grid: {
                 color: getStyle('--cui-border-color-translucent'),
               },
-              max: 250,
+              max: maiorNumero + 10,
               ticks: {
                 color: getStyle('--cui-body-color'),
                 maxTicksLimit: 5,
-                stepSize: Math.ceil(250 / 5),
+                stepSize: Math.ceil((maiorNumero + 10) / 5),
               },
             },
           },

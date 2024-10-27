@@ -178,21 +178,21 @@ const Dashboard = () => {
 
   return (
     <>
-      {/* <WidgetsDropdown className="mb-4" />
+      <WidgetsDropdown className="mb-4" />
       <CCard className="mb-4">
         <CCardBody>
           <CRow>
             <CCol sm={5}>
               <h4 id="traffic" className="card-title mb-0">
-                Traffic
+                Acessos Por Empresa
               </h4>
-              <div className="small text-body-secondary">January - July 2023</div>
+              <div className="small text-body-secondary">Todo o Periodo</div>
             </CCol>
             <CCol sm={7} className="d-none d-md-block">
-              <CButton color="primary" className="float-end">
+              {/* <CButton color="primary" className="float-end">
                 <CIcon icon={cilCloudDownload} />
-              </CButton>
-              <CButtonGroup className="float-end me-3">
+              </CButton> */}
+              {/* <CButtonGroup className="float-end me-3">
                 {['Day', 'Month', 'Year'].map((value) => (
                   <CButton
                     color="outline-secondary"
@@ -203,12 +203,12 @@ const Dashboard = () => {
                     {value}
                   </CButton>
                 ))}
-              </CButtonGroup>
+              </CButtonGroup> */}
             </CCol>
           </CRow>
           <MainChart />
         </CCardBody>
-        <CCardFooter>
+        {/* <CCardFooter>
           <CRow
             xs={{ cols: 1, gutter: 4 }}
             sm={{ cols: 2 }}
@@ -231,9 +231,9 @@ const Dashboard = () => {
               </CCol>
             ))}
           </CRow>
-        </CCardFooter>
+        </CCardFooter> */}
       </CCard>
-      <WidgetsBrand className="mb-4" withCharts />
+      {/* <WidgetsBrand className="mb-4" withCharts />
       <CRow>
         <CCol xs>
           <CCard className="mb-4">
@@ -380,9 +380,9 @@ const Dashboard = () => {
           </CCard>
         </CCol>
       </CRow> */}
-      <div className="d-flex flex-row justify-content-center align-items-center">
+      {/* <div className="d-flex flex-row justify-content-center align-items-center">
         <h2>Dashboard Em Desenvolvimento para a Segunda Sprint</h2>
-      </div>
+      </div> */}
     </>
   )
 }
