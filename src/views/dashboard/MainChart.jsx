@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-
 import { CChartLine } from '@coreui/react-chartjs'
 import { getStyle } from '@coreui/utils'
 import dashboardService from '../../services/dashService'
@@ -10,6 +9,13 @@ const MainChart = () => {
   const [dataGrafico, setDataGrafico] = useState([])
   const [labels, setLabels] = useState([])
   const [maiorNumero, setMaiorNumero] = useState(0)
+
+  const generateRandomColor = () => {
+    const r = Math.floor(Math.random() * 255)
+    const g = Math.floor(Math.random() * 255)
+    const b = Math.floor(Math.random() * 255)
+    return `rgb(${r}, ${g}, ${b})` // Cor RGB sem transparência
+  }
 
   useEffect(() => {
     document.documentElement.addEventListener('ColorSchemeChange', () => {
@@ -61,14 +67,15 @@ const MainChart = () => {
         if (!labels.includes(dadosDePara[dado.nome_mes])) {
           labels.push(dadosDePara[dado.nome_mes])
         }
+        const color = generateRandomColor()
         let item = {
           label: dado.nome_empresa,
-          backgroundColor: `rgba(${getStyle('--cui-info-rgb')}, .1)`,
-          borderColor: getStyle('--cui-info'),
-          pointHoverBackgroundColor: getStyle('--cui-info'),
+          backgroundColor: color,
+          borderColor: color,
+          pointHoverBackgroundColor: color,
           borderWidth: 2,
           data: [],
-          fill: true,
+          fill: false,
         }
 
         if (dado.total_acessos > maiorNumero) {
@@ -87,7 +94,7 @@ const MainChart = () => {
           let dado = response.filter(
             (dado) => dado.nome_empresa === item.label && dadosDePara[dado.nome_mes] === lab,
           )
-          console.log(dado, 'verify')
+
           if (dado.length === 0) {
             item.data.push(0)
           } else {
@@ -100,9 +107,6 @@ const MainChart = () => {
       setDataGrafico(dataSets)
       setLabels(labels)
       setMaiorNumero(maiorNumero)
-
-      console.log(dataSets)
-      console.log(labels)
     } catch (error) {
       console.error(error)
     }

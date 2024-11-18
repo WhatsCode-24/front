@@ -35,6 +35,7 @@ import {
 import acessosServices from '../../../services/acessosService'
 import zonesServices from '../../../services/zonesService'
 import comodoPortasServices from '../../../services/comodoPortasService'
+import { useAuth } from '../../../contexts/authContexts'
 
 const PageAcessManagement = () => {
   const [acessos, setAcessos] = React.useState([])
@@ -49,6 +50,8 @@ const PageAcessManagement = () => {
   const [modalEditVisible, setModalEditVisible] = React.useState(false)
   const [modalAddVisible, setModalAddVisible] = React.useState(false)
   const [modalShowVisible, setModalShowVisible] = React.useState(false)
+
+  const { user } = useAuth()
 
   const getAllAcessos = async () => {
     try {
@@ -191,14 +194,18 @@ const PageAcessManagement = () => {
                         >
                           <CIcon icon={cilPencil} />
                         </button>
-                        <button
-                          className="btn btn-sm btn-danger"
-                          onClick={() => {
-                            deleteAcess(acesso.id_acesso)
-                          }}
-                        >
-                          <CIcon icon={cilTrash} />
-                        </button>
+                        {user?.id_nivel_acesso === 2 ? (
+                          <></>
+                        ) : (
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() => {
+                              deleteAcess(acesso.id_acesso)
+                            }}
+                          >
+                            <CIcon icon={cilTrash} />
+                          </button>
+                        )}
                       </CTableDataCell>
                     </CTableRow>
                   ))}
