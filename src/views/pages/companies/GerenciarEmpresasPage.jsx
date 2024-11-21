@@ -34,6 +34,7 @@ import {
 } from '@coreui/icons'
 import acessosServices from '../../../services/acessosService'
 import companiesServices from '../../../services/empresasService'
+import InputMask from 'react-input-mask'
 
 const PageCompaniesManagement = () => {
   const [empresas, setEmpresas] = React.useState([])
@@ -59,6 +60,11 @@ const PageCompaniesManagement = () => {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  const formatPhone = (phone) => {
+    if (!phone) return ''
+    return phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
   }
 
   useEffect(() => {
@@ -106,7 +112,7 @@ const PageCompaniesManagement = () => {
                     <CTableRow key={empresa.id_empresa}>
                       <CTableHeaderCell scope="row">{empresa.id_empresa}</CTableHeaderCell>
                       <CTableDataCell>{empresa.nome_empresa}</CTableDataCell>
-                      <CTableDataCell>{empresa.telefone_empresa}</CTableDataCell>
+                      <CTableDataCell>{formatPhone(empresa.telefone_empresa)}</CTableDataCell>
                       <CTableDataCell>{empresa.cidade_empresa}</CTableDataCell>
                       <CTableDataCell>{empresa.bairro_empresa}</CTableDataCell>
                       <CTableDataCell>{empresa.logradouro_empresa}</CTableDataCell>
@@ -164,14 +170,15 @@ const PageCompaniesManagement = () => {
                 <CInputGroupText>
                   <CIcon icon={cilPhone} />
                 </CInputGroupText>
-                <CFormInput
-                  type="text"
-                  placeholder="Telefone"
+                <InputMask
+                  mask="(99) 99999-9999"
                   value={addEmpresa?.telefone_empresa}
                   onChange={(e) =>
                     setAddEmpresa({ ...addEmpresa, telefone_empresa: e.target.value })
                   }
-                />
+                >
+                  {(inputProps) => <CFormInput {...inputProps} placeholder="Telefone" />}
+                </InputMask>
               </CInputGroup>
             </CCol>
           </CRow>

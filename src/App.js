@@ -6,10 +6,8 @@ import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
 import { useAuth } from './contexts/authContexts'
 
-// Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
 
-// Pages
 const Login = React.lazy(() => import('./views/pages/login/Login'))
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
@@ -32,7 +30,15 @@ const App = () => {
     setColorMode(storedTheme)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="pt-3 text-center">
+        <CSpinner color="primary" variant="grow" />
+      </div>
+    )
+  }
 
   return (
     <HashRouter>
@@ -50,7 +56,7 @@ const App = () => {
           <Route
             path="*"
             name="Home"
-            element={user ? <DefaultLayout /> : <Navigate to="login" replace />}
+            element={user ? <DefaultLayout /> : <Navigate to="/login" replace />}
           />
         </Routes>
       </Suspense>

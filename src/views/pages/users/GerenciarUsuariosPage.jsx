@@ -23,6 +23,7 @@ import { cilMagnifyingGlass, cilPencil, cilTrash, cilUser } from '@coreui/icons'
 import { Button } from '@coreui/coreui'
 import userServices from '../../../services/userServices'
 import { toast } from 'react-toastify'
+import InputMask from 'react-input-mask'
 
 const PageUsersManagement = () => {
   const [users, setUsers] = React.useState([])
@@ -55,6 +56,16 @@ const PageUsersManagement = () => {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  const formatCpf = (cpf) => {
+    if (!cpf) return ''
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+  }
+
+  const formatPhone = (phone) => {
+    if (!phone) return ''
+    return phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
   }
 
   useEffect(() => {
@@ -99,9 +110,9 @@ const PageUsersManagement = () => {
                     <CTableRow key={user.id_usuario}>
                       <CTableHeaderCell scope="row">{user.id_usuario}</CTableHeaderCell>
                       <CTableDataCell>{user.nome_usuario}</CTableDataCell>
-                      <CTableDataCell>{user.cpf_usuario}</CTableDataCell>
+                      <CTableDataCell>{formatCpf(user.cpf_usuario)}</CTableDataCell>
                       <CTableDataCell>{user.email_usuario}</CTableDataCell>
-                      <CTableDataCell>{user.telefone_usuario}</CTableDataCell>
+                      <CTableDataCell>{formatPhone(user.telefone_usuario)}</CTableDataCell>
                       <CTableDataCell className="d-flex flex-row justify-content-around">
                         <button className="btn btn-sm btn-primary" onClick={() => editUser(user)}>
                           <CIcon icon={cilPencil} />
@@ -156,14 +167,13 @@ const PageUsersManagement = () => {
                 <CInputGroupText>
                   <CIcon icon={cilUser} />
                 </CInputGroupText>
-                <CFormInput
-                  type="text"
-                  placeholder="CPF"
+                <InputMask
+                  mask="999.999.999-99"
                   value={userEdit?.cpf_usuario}
-                  onChange={(e) => {
-                    setUserEdit({ ...userEdit, cpf_usuario: e.target.value })
-                  }}
-                />
+                  onChange={(e) => setUserEdit({ ...userEdit, cpf_usuario: e.target.value })}
+                >
+                  {(inputProps) => <CFormInput {...inputProps} placeholder="CPF" />}
+                </InputMask>
               </CInputGroup>
             </CCol>
           </CRow>
@@ -188,14 +198,13 @@ const PageUsersManagement = () => {
                 <CInputGroupText>
                   <CIcon icon={cilUser} />
                 </CInputGroupText>
-                <CFormInput
-                  type="text"
-                  placeholder="Telefone"
+                <InputMask
+                  mask="(99) 99999-9999"
                   value={userEdit?.telefone_usuario}
-                  onChange={(e) => {
-                    setUserEdit({ ...userEdit, telefone_usuario: e.target.value })
-                  }}
-                />
+                  onChange={(e) => setUserEdit({ ...userEdit, telefone_usuario: e.target.value })}
+                >
+                  {(inputProps) => <CFormInput {...inputProps} placeholder="Telefone" />}
+                </InputMask>
               </CInputGroup>
             </CCol>
           </CRow>
@@ -251,14 +260,13 @@ const PageUsersManagement = () => {
                 <CInputGroupText>
                   <CIcon icon={cilUser} />
                 </CInputGroupText>
-                <CFormInput
-                  type="text"
-                  placeholder="CPF"
+                <InputMask
+                  mask="999.999.999-99"
                   value={userAdd?.cpf_usuario}
-                  onChange={(e) => {
-                    setUserAdd({ ...userAdd, cpf_usuario: e.target.value })
-                  }}
-                />
+                  onChange={(e) => setUserAdd({ ...userAdd, cpf_usuario: e.target.value })}
+                >
+                  {(inputProps) => <CFormInput {...inputProps} placeholder="CPF" />}
+                </InputMask>
               </CInputGroup>
             </CCol>
           </CRow>
@@ -283,14 +291,13 @@ const PageUsersManagement = () => {
                 <CInputGroupText>
                   <CIcon icon={cilUser} />
                 </CInputGroupText>
-                <CFormInput
-                  type="text"
-                  placeholder="Telefone"
+                <InputMask
+                  mask="(99) 99999-9999"
                   value={userAdd?.telefone_usuario}
-                  onChange={(e) => {
-                    setUserAdd({ ...userAdd, telefone_usuario: e.target.value })
-                  }}
-                />
+                  onChange={(e) => setUserAdd({ ...userAdd, telefone_usuario: e.target.value })}
+                >
+                  {(inputProps) => <CFormInput {...inputProps} placeholder="Telefone" />}
+                </InputMask>
               </CInputGroup>
             </CCol>
           </CRow>
