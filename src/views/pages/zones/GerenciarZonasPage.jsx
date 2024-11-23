@@ -36,6 +36,7 @@ import {
 import zonesServices from '../../../services/zonesService'
 import companiesServices from '../../../services/empresasService'
 import { toast } from 'react-toastify'
+import Estela from '../estela/Estela'
 
 const PageZonesManagement = () => {
   const [zones, setZones] = useState([])
@@ -564,6 +565,7 @@ const PageZonesManagement = () => {
           </CRow>
         </CModalBody>
       </CModal>
+      <Estela />
     </div>
   )
 }

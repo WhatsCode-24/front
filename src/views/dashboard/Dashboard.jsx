@@ -54,6 +54,8 @@ import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import MainChart from './MainChart'
 
+import Estela from '../pages/estela/Estela'
+
 const Dashboard = () => {
   const progressExample = [
     { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
@@ -383,6 +385,7 @@ const Dashboard = () => {
       {/* <div className="d-flex flex-row justify-content-center align-items-center">
         <h2>Dashboard Em Desenvolvimento para a Segunda Sprint</h2>
       </div> */}
+      <Estela />
     </>
   )
 }

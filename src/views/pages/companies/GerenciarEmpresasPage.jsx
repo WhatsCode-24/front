@@ -35,6 +35,8 @@ import {
 import acessosServices from '../../../services/acessosService'
 import companiesServices from '../../../services/empresasService'
 
+import Estela from '../estela/Estela'
+
 const PageCompaniesManagement = () => {
   const [empresas, setEmpresas] = React.useState([])
   const [addEmpresa, setAddEmpresa] = React.useState(null)
@@ -436,6 +438,7 @@ const PageCompaniesManagement = () => {
           </CRow>
         </CModalBody>
       </CModal>
+      <Estela />
     </div>
   )
 }

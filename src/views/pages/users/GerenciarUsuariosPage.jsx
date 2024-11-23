@@ -24,6 +24,8 @@ import { Button } from '@coreui/coreui'
 import userServices from '../../../services/userServices'
 import { toast } from 'react-toastify'
 
+import Estela from '../estela/Estela'
+
 const PageUsersManagement = () => {
   const [users, setUsers] = React.useState([])
   const [userEdit, setUserEdit] = React.useState(null)
@@ -357,6 +359,7 @@ const PageUsersManagement = () => {
           </CRow>
         </CModalBody>
       </CModal>
+      <Estela />
     </div>
   )
 }

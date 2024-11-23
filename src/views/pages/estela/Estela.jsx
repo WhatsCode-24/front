@@ -1,55 +1,51 @@
-import React, { useState } from 'react';
-import { CContainer, CRow, CCol, CButton } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { cilChatBubble } from '@coreui/icons';
-import axios from 'axios';
+import React, { useState } from 'react'
+import { CContainer, CRow, CCol, CButton } from '@coreui/react'
+import CIcon from '@coreui/icons-react'
+import { cilChatBubble } from '@coreui/icons'
+import axios from 'axios'
 
 const Estela = () => {
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [isWelcomeScreenVisible, setIsWelcomeScreenVisible] = useState(false);
-  const [messages, setMessages] = useState([
-    { from: 'bot', text: 'Olá! Como posso ajudar?' },
-  ]);
-  const [userInput, setUserInput] = useState('');
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [isWelcomeScreenVisible, setIsWelcomeScreenVisible] = useState(false)
+  const [messages, setMessages] = useState([{ from: 'bot', text: 'Olá! Como posso ajudar?' }])
+  const [userInput, setUserInput] = useState('')
 
   const handleStartChat = () => {
-    setIsWelcomeScreenVisible(false);
-    setIsChatOpen(true);
-  };
+    setIsWelcomeScreenVisible(false)
+    setIsChatOpen(true)
+  }
 
   const handleSendMessage = async () => {
     if (userInput.trim()) {
-      setMessages([...messages, { from: 'user', text: userInput }]);
-      setUserInput('');
+      setMessages([...messages, { from: 'user', text: userInput }])
+      setUserInput('')
 
       try {
         const response = await axios.post('http://localhost:5000/chatbot', {
           query: userInput,
-        });
+        })
 
         setMessages((prevMessages) => [
           ...prevMessages,
           { from: 'bot', text: response.data.response },
-        ]);
+        ])
       } catch (error) {
-        console.error("Erro ao comunicar com o backend:", error);
+        console.error('Erro ao comunicar com o backend:', error)
         setMessages((prevMessages) => [
           ...prevMessages,
           { from: 'bot', text: 'Desculpe, houve um erro. Tente novamente.' },
-        ]);
+        ])
       }
     }
-  };
+  }
 
   const handleCloseChat = () => {
-    setIsChatOpen(false);
-  };
+    setIsChatOpen(false)
+  }
 
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-start">
       <CContainer>
-
-
         <div
           className="chat-icon"
           onClick={() => setIsWelcomeScreenVisible(true)}
@@ -179,7 +175,7 @@ const Estela = () => {
                 backgroundColor: '#e0e0e0',
                 maxHeight: '320px',
                 display: 'flex',
-                flexDirection: 'column', 
+                flexDirection: 'column',
               }}
             >
               {messages.map((message, index) => (
@@ -195,10 +191,10 @@ const Estela = () => {
                     fontSize: '16px',
                     backgroundColor: message.from === 'bot' ? '#fff' : '#1e90ff',
                     color: message.from === 'bot' ? '#333' : '#fff',
-                    alignSelf: message.from === 'bot' ? 'flex-start' : 'flex-end',  
-                    textAlign: message.from === 'bot' ? 'left' : 'right',  
+                    alignSelf: message.from === 'bot' ? 'flex-start' : 'flex-end',
+                    textAlign: message.from === 'bot' ? 'left' : 'right',
                     display: 'flex',
-                    justifyContent: message.from === 'bot' ? 'flex-start' : 'flex-end',  
+                    justifyContent: message.from === 'bot' ? 'flex-start' : 'flex-end',
                   }}
                 >
                   {message.text}
@@ -227,7 +223,7 @@ const Estela = () => {
                 placeholder="Escreva uma mensagem..."
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
-                    handleSendMessage();
+                    handleSendMessage()
                   }
                 }}
                 style={{
@@ -258,7 +254,7 @@ const Estela = () => {
         )}
       </CContainer>
     </div>
-  );
-};
+  )
+}
 
-export default Estela;
+export default Estela

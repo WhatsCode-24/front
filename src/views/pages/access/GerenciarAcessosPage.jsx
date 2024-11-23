@@ -35,6 +35,7 @@ import {
 import acessosServices from '../../../services/acessosService'
 import zonesServices from '../../../services/zonesService'
 import comodoPortasServices from '../../../services/comodoPortasService'
+import Estela from '../estela/Estela'
 
 const PageAcessManagement = () => {
   const [acessos, setAcessos] = React.useState([])
@@ -587,6 +588,7 @@ const PageAcessManagement = () => {
           </div>
         </CModalBody>
       </CModal>
+      <Estela />
     </div>
   )
 }
