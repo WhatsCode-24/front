@@ -2,7 +2,7 @@
 import axios from 'axios'
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:3001', // substitua pela sua URL base
+  baseURL: 'https://tf3g1c99sa.execute-api.us-east-1.amazonaws.com', // substitua pela sua URL base
   timeout: 10000, // tempo limite da requisição
 })
 
