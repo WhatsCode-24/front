@@ -21,7 +21,7 @@ const Estela = () => {
       setUserInput('')
 
       try {
-        const response = await axios.post('http://54.91.243.106:5000/chatbot', {
+        const response = await axios.post('http://3.93.198.0:5000/chatbot', {
           query: userInput,
         })
 
